@@ -37,7 +37,7 @@ py -m venv env
 pip install -r requirements.txt
 ```
 
-## What is Series Sound?
+### What is Series Sound?
 
 Series Sound is a Python-based tool that converts financial time series data into an audible representation. By analyzing percentage changes and extracting the fundamental frequency via FFT, it assigns harmonic frequencies to each data point and generates a sequence of musical notes. The result is a WAV audio file that allows traders and analysts to "hear" the market movements.
 
