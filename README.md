@@ -83,8 +83,12 @@ Generating audio: 100%|██████████| 1440/1440 [00:05<00:00, 2
 ----------
 ## Output files: 
 ****************************************************************
-Audio generated: MUSIC/audio_2022-05-12.wav
-CSV saved: MUSIC/output_2022-05-12.csv
+```bash
+   Audio generated: MUSIC/audio_2022-05-12.wav
+```
+```bash
+   CSV saved: MUSIC/output_2022-05-12.csv
+```
 ****************************************************************
 
 
