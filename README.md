@@ -1,11 +1,10 @@
-# Series Sound
+> # Disclaimer:
+> For research and experimental purposes only. Not intended for trading decisions.
 
+# Series Sound
 **Sonification of financial time series through spectral analysis and musical note mapping.**
 
 This project transforms percentage changes in financial time series into audible frequencies using harmonic proportions and fundamental frequency detection. It generates both a CSV file with the mapped notes and a WAV audio file for auditory analysis.
-
-> # Disclaimer:
-> For research and experimental purposes only. Not intended for trading decisions.
 
 ---
 
@@ -31,10 +30,13 @@ This project transforms percentage changes in financial time series into audible
    ```bash
    pip install -r requirements.txt
    ```
+---
 
 # What is Series Sound?
 
 Series Sound is a Python-based tool that converts financial time series data into an audible representation. By analyzing percentage changes and extracting the fundamental frequency via FFT, it assigns harmonic frequencies to each data point and generates a sequence of musical notes. The result is a WAV audio file that allows traders and analysts to "hear" the market movements.
+
+---
 
 # How it works:
 
@@ -48,10 +50,12 @@ Series Sound is a Python-based tool that converts financial time series data int
 
 5. Audio synthesis: Pure tones are generated for each data point and concatenated into a WAV file.
 
+---
 # Objective:
 
 The objective is to provide an alternative sensory channel for analyzing financial time series, potentially revealing patterns or anomalies that are not easily spotted in visual charts. By sonifying the data, the user can listen to changes in volatility, trends, and price dynamics.
 
+---
 # Usage:
 
 **Show help:**
@@ -65,15 +69,16 @@ The objective is to provide an alternative sensory channel for analyzing financi
    ```bash
    python Spectral_Analysis.py
    ```
+---
 
 # Expected interactive output:
 
- Available dates:
+Available dates:
   1. 2022-05-12
   2. 2022-05-13
   3. 2022-05-14
 
- Enter the number of the date you want to analyze (or 'q' to quit): 1
+Enter the number of the date you want to analyze (or 'q' to quit): 1
 
 Processing date: 2022-05-12
 ----------
@@ -90,7 +95,7 @@ Generating audio: 100%|██████████| 1440/1440 [00:05<00:00, 2
    CSV saved: MUSIC/output_2022-05-12.csv
 ```
 ****************************************************************
-
+---
 ## Dependencies
 **All required packages are listed in requirements.txt:**
 ```bash
@@ -101,7 +106,7 @@ soundfile
 scipy
 tqdm
 ```
-
+---
 ## License
 **This project is licensed under the MIT License. See the LICENSE file for details.**
 
@@ -126,15 +131,15 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
+---
 ## Author
 **Nestor Mendez / FiboQuant_MX
 
 GitHub: @newnes
-
+---
 ## Contributing
 **Contributions, issues, and feature requests are welcome. Feel free to open an issue or submit a pull request.**
-
+---
 ## Show your support
 **If you find this project interesting, please give it a star on GitHub.**
 
