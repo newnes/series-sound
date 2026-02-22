@@ -172,27 +172,27 @@ if __name__ == "__main__":
         fechas_disponibles = sorted(set(fechas_disponibles))
 
         # Mostrar fechas numeradas
-        print("\n📅 Fechas disponibles:")
+        print("\n Fechas disponibles:")
         for i, f in enumerate(fechas_disponibles):
             print(f"  {i+1}. {f}")
 
         # Pedir al usuario que elija
         while True:
             try:
-                opcion = input("\n👉 Ingresa el número de la fecha que quieres analizar (o 'q' para salir): ").strip()
+                opcion = input("\n Ingresa el número de la fecha que quieres analizar (o 'q' para salir): ").strip()
                 if opcion.lower() == 'q':
-                    print("👋 Saliendo...")
+                    print(" Saliendo...")
                     sys.exit(0)
                 idx = int(opcion) - 1
                 if 0 <= idx < len(fechas_disponibles):
                     fecha_elegida = str(fechas_disponibles[idx])
                     break
                 else:
-                    print(f"❌ Número fuera de rango. Debe ser entre 1 y {len(fechas_disponibles)}.")
+                    print(f" Número fuera de rango. Debe ser entre 1 y {len(fechas_disponibles)}.")
             except ValueError:
-                print("❌ Por favor, ingresa un número válido.")
+                print(" Por favor, ingresa un número válido.")
 
-        print(f"\n🎯 Procesando fecha: {fecha_elegida}")
+        print(f"\n Procesando fecha: {fecha_elegida}")
         main(fecha_elegida)
 
     except Exception as e:
