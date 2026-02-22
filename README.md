@@ -127,3 +127,14 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
+## Author
+**Nestor Mendez / FiboQuant_MX
+
+GitHub: @newnes
+
+## Contributing
+**Contributions, issues, and feature requests are welcome. Feel free to open an issue or submit a pull request.**
+
+## Show your support
+**If you find this project interesting, please give it a star on GitHub.**
+
