@@ -10,191 +10,191 @@ from scipy.fft import fft, fftfreq
 import logging
 from tqdm import tqdm
 
-# === CONFIGURACIÓN ===
+# === CONFIGURATION ===
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Parámetros de audio
-SR = 44100  # Frecuencia de muestreo (calidad CD)
-DURACION_NOTA = 0.15  # Duración de cada tono en segundos
-RANGO_MIDI = (21, 108)  # Notas de piano estándar (A0 a C8)
+# Audio parameters
+SR = 44100  # Sampling rate (CD quality)
+NOTE_DURATION = 0.15  # Duration of each tone in seconds
+MIDI_RANGE = (21, 108)  # Standard piano notes (A0 to C8)
 
-# Proporciones armónicas optimizadas
+# Optimized harmonic proportions
 HARMONIC_PROPS = [
-    1.0,  # Unísono
-    5 / 4,  # Tercera mayor justa
-    3 / 2,  # Quinta justa
-    9 / 8,  # Segunda mayor
-    4 / 3,  # Cuarta justa
-    8 / 5  # Sexta menor
+    1.0,      # Unison
+    5 / 4,    # Just major third
+    3 / 2,    # Just fifth
+    9 / 8,    # Major second
+    4 / 3,    # Just fourth
+    8 / 5     # Minor sixth
 ]
 
 
-# === FUNCIONES AUXILIARES ===
-def analisis_espectral_mejorado(serie: np.ndarray) -> float:
-    """Análisis espectral avanzado con detección robusta de frecuencia base."""
-    n = len(serie)
+# === AUXILIARY FUNCTIONS ===
+def enhanced_spectral_analysis(series: np.ndarray) -> float:
+    """Advanced spectral analysis with robust fundamental frequency detection."""
+    n = len(series)
 
-    # Aplicar ventana de Hann para reducir fugas espectrales
-    ventana = np.hanning(n)
-    fft_vals = fft(serie * ventana)
+    # Apply Hann window to reduce spectral leakage
+    window = np.hanning(n)
+    fft_vals = fft(series * window)
 
-    frecuencias = fftfreq(n, d=1)[:n // 2]
-    espectro = np.abs(fft_vals[:n // 2]) ** 2  # Potencia espectral
+    frequencies = fftfreq(n, d=1)[:n // 2]
+    spectrum = np.abs(fft_vals[:n // 2]) ** 2  # Spectral power
 
-    # Detección de picos con supresión de ruido
-    umbral = 0.15 * np.max(espectro)
-    picos = np.where(espectro > umbral)[0]
+    # Peak detection with noise suppression
+    threshold = 0.15 * np.max(spectrum)
+    peaks = np.where(spectrum > threshold)[0]
 
-    if len(picos) == 0:
-        logger.warning("No se detectaron picos significativos. Usando valor por defecto 440 Hz")
+    if len(peaks) == 0:
+        logger.warning("No significant peaks detected. Using default 440 Hz")
         return 440.0
 
-    # Tomar la frecuencia más baja entre los picos significativos
-    frecuencia_base = frecuencias[picos[np.argmin(frecuencias[picos])]]
+    # Take the lowest frequency among significant peaks
+    fundamental_freq = frequencies[peaks[np.argmin(frequencies[peaks])]]
 
-    # Asegurar rango audible y valor mínimo
-    return np.clip(abs(frecuencia_base), 80, 2000)
+    # Ensure audible range and minimum value
+    return np.clip(abs(fundamental_freq), 80, 2000)
 
 
-def normalizar_cambios(pct_series: pd.Series) -> np.ndarray:
-    """Normalización avanzada con suavizado y escalado controlado."""
-    # Suavizado con media móvil gaussiana
-    suavizado = pct_series.rolling(
+def normalize_changes(pct_series: pd.Series) -> np.ndarray:
+    """Advanced normalization with smoothing and controlled scaling."""
+    # Smoothing with Gaussian moving average
+    smoothed = pct_series.rolling(
         window=5,
         min_periods=1,
         center=True,
         win_type='gaussian'
     ).mean(std=1.5).fillna(0)
 
-    # Escalado asimétrico para mayor sensibilidad en subidas
-    escalado = np.clip(suavizado, -0.08, 0.12)
-    return (escalado + 0.08) / 0.2  # Normalizar a [0, 1]
+    # Asymmetric scaling for higher sensitivity to increases
+    scaled = np.clip(smoothed, -0.08, 0.12)
+    return (scaled + 0.08) / 0.2  # Normalize to [0, 1]
 
 
-# === PROGRAMA PRINCIPAL ===
-def main(fecha: str):
+# === MAIN PROGRAM ===
+def main(date: str):
     try:
+        os.makedirs("MUSIC", exist_ok=True)
 
-        os.makedirs("MUSICA", exist_ok=True)
+        logger.info(f"Starting processing for {date}")
 
-        logger.info(f"Iniciando procesamiento para {fecha}")
-
-        # ===== CARGA Y PREPARACIÓN DE DATOS =====
-        ruta_archivo = os.path.join("X_syntetic", f"{fecha}.parquet")
-        df = pd.read_parquet(ruta_archivo)[['value']].reset_index(drop=True)
+        # ===== DATA LOADING AND PREPARATION =====
+        file_path = os.path.join("X_synthetic", f"{date}.parquet")
+        df = pd.read_parquet(file_path)[['value']].reset_index(drop=True)
 
         if df['value'].isnull().all():
-            raise ValueError("Serie temporal vacía o inválida")
+            raise ValueError("Empty or invalid time series")
 
-        # ===== PROCESAMIENTO DE CAMBIOS PORCENTUALES =====
+        # ===== PERCENTAGE CHANGE PROCESSING =====
         df['pct_change'] = df['value'].pipe(lambda x: x.replace([np.inf, -np.inf], np.nan)) \
             .pct_change() \
             .fillna(0)
 
-        # ===== ANÁLISIS ESPECTRAL MEJORADO =====
-        frecuencia_base = analisis_espectral_mejorado(df['value'].values.astype(np.float64))
-        logger.info(f"Frecuencia base detectada: {frecuencia_base:.2f} Hz")
+        # ===== ENHANCED SPECTRAL ANALYSIS =====
+        fundamental_freq = enhanced_spectral_analysis(df['value'].values.astype(np.float64))
+        logger.info(f"Detected fundamental frequency: {fundamental_freq:.2f} Hz")
 
-        # ===== GENERACIÓN DE FRECUENCIAS MUSICALES =====
-        normalized = normalizar_cambios(df['pct_change'])
+        # ===== MUSICAL FREQUENCY GENERATION =====
+        normalized = normalize_changes(df['pct_change'])
 
-        # Cálculo vectorizado de frecuencias
+        # Vectorized frequency calculation
         indices = np.arange(len(df))
         props = np.array([HARMONIC_PROPS[i % len(HARMONIC_PROPS)] for i in indices])
-        hz_values = frecuencia_base * props * (0.6 + 0.4 * normalized)  # Rango dinámico controlado
+        hz_values = fundamental_freq * props * (0.6 + 0.4 * normalized)  # Controlled dynamic range
         hz_values = np.clip(hz_values, 20, 5000).round(2)
 
-        # ===== CONVERSIÓN A NOTAS MUSICALES =====
-        notas = []
-        for hz in tqdm(hz_values, desc="Generando notas"):
+        # ===== CONVERSION TO MUSICAL NOTES =====
+        notes = []
+        for hz in tqdm(hz_values, desc="Generating notes"):
             try:
                 midi = lr.hz_to_midi(hz)
-                midi_clip = np.clip(midi, *RANGO_MIDI)
-                notas.append(lr.midi_to_note(int(midi_clip)))
+                midi_clip = np.clip(midi, *MIDI_RANGE)
+                notes.append(lr.midi_to_note(int(midi_clip)))
             except Exception as e:
-                logger.error(f"Error en conversión MIDI: {e}")
-                notas.append("A4")
+                logger.error(f"Error in MIDI conversion for {hz} Hz: {e}")
+                notes.append("A4")
 
-        # ===== GUARDADO DE RESULTADOS =====
+        # ===== SAVE RESULTS =====
         df_output = pd.DataFrame({
-            'tiempo': df.index,
+            'time': df.index,
             'pct_change': df['pct_change'],
-            'frecuencia_hz': hz_values,
-            'nota': notas
+            'frequency_hz': hz_values,
+            'note': notes
         })
 
-        df_output.to_csv(f"MUSICA/output_{fecha}.csv", index=False)
-        logger.info(f"Archivo CSV guardado: output_{fecha}.csv")
+        df_output.to_csv(f"MUSIC/output_{date}.csv", index=False)
+        logger.info(f"CSV file saved: output_{date}.csv")
 
-        # ===== GENERACIÓN DE AUDIO MEJORADO =====
+        # ===== ENHANCED AUDIO GENERATION =====
         audio = []
-        for hz in tqdm(hz_values, desc="Generando audio"):
+        for hz in tqdm(hz_values, desc="Generating audio"):
             if hz < 20:
-                continue  # Ignorar frecuencias inaudibles
+                continue  # Ignore inaudible frequencies
             try:
-                tono = lr.tone(frequency=hz, sr=SR, duration=DURACION_NOTA)
-                audio.append(tono)
+                tone = lr.tone(frequency=hz, sr=SR, duration=NOTE_DURATION)
+                audio.append(tone)
             except Exception as e:
-                logger.error(f"Error generando tono {hz} Hz: {e}")
+                logger.error(f"Error generating tone for {hz} Hz: {e}")
 
         audio_full = np.concatenate(audio)
-        sf.write(f'MUSICA/audio_{fecha}.wav', audio_full, SR)
-        logger.info(f"Audio generado: audio_{fecha}.wav")
+        sf.write(f'MUSIC/audio_{date}.wav', audio_full, SR)
+        logger.info(f"Audio generated: audio_{date}.wav")
 
     except Exception as e:
-        logger.error(f"Error procesando {fecha}: {str(e)}", exc_info=True)
+        logger.error(f"Error processing {date}: {str(e)}", exc_info=True)
         raise
 
 
 if __name__ == "__main__":
     try:
-        # Obtener lista de archivos .parquet
-        carpeta = "X_syntetic"
-        patron = os.path.join(carpeta, "*.parquet")
-        archivos = glob.glob(patron)
+        # Get list of .parquet files in the X_synthetic folder
+        folder = "X_synthetic"
+        pattern = os.path.join(folder, "*.parquet")
+        files = glob.glob(pattern)
 
-        if not archivos:
-            logger.error("No se encontraron archivos .parquet en la carpeta X_syntetic")
+        if not files:
+            logger.error("No .parquet files found in X_synthetic folder")
             sys.exit(1)
 
-        # Extraer fechas
-        fechas_disponibles = []
-        for archivo in archivos:
-            nombre = os.path.basename(archivo)
-            fecha_str = nombre.replace(".parquet", "")
+        # Extract dates from filenames
+        available_dates = []
+        for file in files:
+            filename = os.path.basename(file)  # e.g., "2022-05-12.parquet"
+            date_str = filename.replace(".parquet", "")
             try:
-                fecha = pd.to_datetime(fecha_str).date()
-                fechas_disponibles.append(fecha)
+                date = pd.to_datetime(date_str).date()
+                available_dates.append(date)
             except Exception as e:
-                logger.warning(f"Nombre inválido: {nombre} - {e}")
+                logger.warning(f"Invalid filename format for date: {filename} - {e}")
 
-        fechas_disponibles = sorted(set(fechas_disponibles))
+        # Sort and remove duplicates
+        available_dates = sorted(set(available_dates))
 
-        # Mostrar fechas numeradas
-        print("\n Fechas disponibles:")
-        for i, f in enumerate(fechas_disponibles):
-            print(f"  {i+1}. {f}")
+        # Display numbered dates
+        print("\n📅 Available dates:")
+        for i, d in enumerate(available_dates):
+            print(f"  {i+1}. {d}")
 
-        # Pedir al usuario que elija
+        # Ask user to choose
         while True:
             try:
-                opcion = input("\n Ingresa el número de la fecha que quieres analizar (o 'q' para salir): ").strip()
-                if opcion.lower() == 'q':
-                    print(" Saliendo...")
+                choice = input("\n👉 Enter the number of the date you want to analyze (or 'q' to quit): ").strip()
+                if choice.lower() == 'q':
+                    print("👋 Exiting...")
                     sys.exit(0)
-                idx = int(opcion) - 1
-                if 0 <= idx < len(fechas_disponibles):
-                    fecha_elegida = str(fechas_disponibles[idx])
+                idx = int(choice) - 1
+                if 0 <= idx < len(available_dates):
+                    selected_date = str(available_dates[idx])
                     break
                 else:
-                    print(f" Número fuera de rango. Debe ser entre 1 y {len(fechas_disponibles)}.")
+                    print(f"❌ Number out of range. Must be between 1 and {len(available_dates)}.")
             except ValueError:
-                print(" Por favor, ingresa un número válido.")
+                print("❌ Please enter a valid number.")
 
-        print(f"\n Procesando fecha: {fecha_elegida}")
-        main(fecha_elegida)
+        print(f"\n🎯 Processing date: {selected_date}")
+        main(selected_date)
 
     except Exception as e:
-        logger.critical(f"Error crítico: {str(e)}", exc_info=True)
+        logger.critical(f"Critical error: {str(e)}", exc_info=True)
         sys.exit(1)
