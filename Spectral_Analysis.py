@@ -2,7 +2,9 @@ import numpy as np
 import pandas as pd
 import librosa as lr
 import soundfile as sf
-
+import os
+import glob
+import sys
 
 from scipy.fft import fft, fftfreq
 import logging
@@ -73,10 +75,13 @@ def normalizar_cambios(pct_series: pd.Series) -> np.ndarray:
 # === PROGRAMA PRINCIPAL ===
 def main(fecha: str):
     try:
+
+        os.makedirs("MUSICA", exist_ok=True)
+
         logger.info(f"Iniciando procesamiento para {fecha}")
 
         # ===== CARGA Y PREPARACIÓN DE DATOS =====
-        ruta_archivo = f'D:\\Features_Series\\X_syntetic\\{fecha}.parquet'
+        ruta_archivo = os.path.join("X_syntetic", f"{fecha}.parquet")
         df = pd.read_parquet(ruta_archivo)[['value']].reset_index(drop=True)
 
         if df['value'].isnull().all():
@@ -144,16 +149,52 @@ def main(fecha: str):
 
 if __name__ == "__main__":
     try:
-        # Cargar fechas disponibles
-        all_weeks = pd.read_csv("XAUUSD.csv", parse_dates=["date"])
-        fechas_disponibles = all_weeks["date"].dt.date.unique()
+        # Obtener lista de archivos .parquet
+        carpeta = "X_syntetic"
+        patron = os.path.join(carpeta, "*.parquet")
+        archivos = glob.glob(patron)
 
-        print("Fechas disponibles:")
-        print(", ".join(str(f) for f in fechas_disponibles))
+        if not archivos:
+            logger.error("No se encontraron archivos .parquet en la carpeta X_syntetic")
+            sys.exit(1)
 
-        # Seleccionar fecha (ejemplo)
-        fecha_ejemplo = "2022-05-12"
-        main(fecha_ejemplo)
+        # Extraer fechas
+        fechas_disponibles = []
+        for archivo in archivos:
+            nombre = os.path.basename(archivo)
+            fecha_str = nombre.replace(".parquet", "")
+            try:
+                fecha = pd.to_datetime(fecha_str).date()
+                fechas_disponibles.append(fecha)
+            except Exception as e:
+                logger.warning(f"Nombre inválido: {nombre} - {e}")
+
+        fechas_disponibles = sorted(set(fechas_disponibles))
+
+        # Mostrar fechas numeradas
+        print("\n📅 Fechas disponibles:")
+        for i, f in enumerate(fechas_disponibles):
+            print(f"  {i+1}. {f}")
+
+        # Pedir al usuario que elija
+        while True:
+            try:
+                opcion = input("\n👉 Ingresa el número de la fecha que quieres analizar (o 'q' para salir): ").strip()
+                if opcion.lower() == 'q':
+                    print("👋 Saliendo...")
+                    sys.exit(0)
+                idx = int(opcion) - 1
+                if 0 <= idx < len(fechas_disponibles):
+                    fecha_elegida = str(fechas_disponibles[idx])
+                    break
+                else:
+                    print(f"❌ Número fuera de rango. Debe ser entre 1 y {len(fechas_disponibles)}.")
+            except ValueError:
+                print("❌ Por favor, ingresa un número válido.")
+
+        print(f"\n🎯 Procesando fecha: {fecha_elegida}")
+        main(fecha_elegida)
 
     except Exception as e:
         logger.critical(f"Error crítico: {str(e)}", exc_info=True)
+        sys.exit(1)
