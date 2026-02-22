@@ -3,8 +3,7 @@
 
 ## Registered Idea Work (2016)
 
-[![Certificado 2016]](https://github.com/newnes/Time-Series-Sound/raw/main/Cert_Author.pdf) ]
-*Click to view the copyright registration of "LA FRECUENCIA ARMÓNICA EN EL ANÁLISIS DE VALORES DE LOS MERCADOS BURSÁTILES"*
+[View the copyright registration of "LA FRECUENCIA ARMÓNICA EN EL ANÁLISIS DE VALORES DE LOS MERCADOS BURSÁTILES" (PDF)](https://github.com/newnes/Time-Series-Sound/raw/main/Cert_Author.pdf)
 
 # Series Sound
 
