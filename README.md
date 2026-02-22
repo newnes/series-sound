@@ -13,29 +13,24 @@ This project transforms percentage changes in financial time series into audible
 
 # WINDOWS:
 
-1. **Upgrade pip**
-   ```bash
-   python.exe -m pip install --upgrade pip
-   py -m pip --version
-   ```
 1. Updating `pip`
    ```bash
    python.exe -m pip install --upgrade pip
    py -m pip --version
    ```
 2. Installing `virtualenv`
-  ```bash
-  py -m pip install --user virtualenv
-  ```
+   ```bash
+   py -m pip install --user virtualenv
+   ```
 3. Creating a virtualenv:
-  ```bash
-  py -m venv env
-  .\env\Scripts\activate
-  ```
+   ```bash
+   py -m venv env
+   .\env\Scripts\activate
+   ```
 4. Install all dependencies:
-  ```bash
-  pip install -r requirements.txt
-  ```
+   ```bash
+   pip install -r requirements.txt
+   ```
 
 # What is Series Sound?
 
