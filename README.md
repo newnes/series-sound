@@ -132,8 +132,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ## Author
-**Nestor Mendez / FiboQuant_MX**
-**GitHub: @newnes**
+**Nestor Mendez / FiboQuant_MX / GitHub: @newnes**
 
 ## Contributing
 Contributions, issues, and feature requests are welcome. Feel free to open an issue or submit a pull request.
