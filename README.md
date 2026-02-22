@@ -52,6 +52,33 @@ Series Sound is a Python-based tool that converts financial time series data int
 
 The objective is to provide an alternative sensory channel for analyzing financial time series, potentially revealing patterns or anomalies that are not easily spotted in visual charts. By sonifying the data, the user can listen to changes in volatility, trends, and price dynamics.
 
-# Usage
+# Usage:
+
+**Show help:**
+  
+   ```bash
+   python Spectral_Analysis.py --help
+   ```
+
+**Run the script:**
+
+   ```bash
+   python Spectral_Analysis.py
+   ```
+
+# Expected interactive output:
+
+ Available dates:
+  1. 2022-05-12
+  2. 2022-05-13
+  3. 2022-05-14
+
+ Enter the number of the date you want to analyze (or 'q' to quit): 1
+
+ Processing date: 2022-05-12
+ Generating notes: 100%|██████████| 1440/1440 [00:02<00:00, 500.00it/s]
+ Generating audio: 100%|██████████| 1440/1440 [00:05<00:00, 250.00it/s]
+ Audio generated: MUSIC/audio_2022-05-12.wav
+ CSV saved: MUSIC/output_2022-05-12.csv
 
 
